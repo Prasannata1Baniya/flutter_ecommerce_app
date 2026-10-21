@@ -1,17 +1,14 @@
-# frontend
+## App Preview
 
-A new Flutter project.
+### Home Screen
+![Home Screen](assets/app_preview/home_page.png)
 
-## Getting Started
+### Saved Screen
+![Saved Screen](assets/app_preview/saved_page.png)
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+### Order Screen
+![Order Screen](assets/app_preview/order_page.png)
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Profile Screen
+![Profile Screen](assets/app_preview/profile.png)

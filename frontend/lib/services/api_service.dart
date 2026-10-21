@@ -281,8 +281,8 @@ class ApiService {
         'Ethically handmade in Kyoto studio'
       ],
       images: [
-        'https://images.unsplash.com/photo-1612196808214-b7e239e5f6b7?auto=format&fit=crop&q=80&w=800',
-        'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&q=80&w=800'
+        'https://images.unsplash.com/photo-1677761821976-4a2b4ed29437?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D?auto=format&fit=crop&q=80&w=800',
+        'https://images.unsplash.com/photo-1677761821976-4a2b4ed29437?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D?auto=format&fit=crop&q=80&w=800'
       ],
       colors: ['#F5F2EB', '#222222', '#C2B29F'],
       sizes: ['Standard'],
