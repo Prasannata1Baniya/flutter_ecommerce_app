@@ -1,0 +1,1 @@
+# Django store app package
