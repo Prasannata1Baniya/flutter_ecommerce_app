@@ -178,7 +178,7 @@ def orders_view(request):
             status="Processing",
             shipping_address=f"{request.data.get('address')}, {request.data.get('city')} {request.data.get('postal_code')}",
             full_name=request.data.get('full_name', ''),
-            payment_method=request.data.get('payment_method', 'Credit Card')
+            payment_method=request.data.get('payment_method', 'eSewa')
         )
 
         for oi in order_items_to_create:
@@ -189,6 +189,24 @@ def orders_view(request):
 
         serializer = OrderSerializer(new_order)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+@api_view(['POST'])
+def esewa_verify_payment(request):
+    """
+    Simulates eSewa payment verification on Django backend.
+    """
+    amount = request.data.get('amount')
+    reference_id = request.data.get('reference_id', f"ESEWA-{uuid.uuid4().hex[:8].upper()}")
+    esewa_phone = request.data.get('esewa_phone')
+
+    return Response({
+        "status": "SUCCESS",
+        "message": "eSewa Payment Verified Successfully",
+        "reference_id": reference_id,
+        "amount": amount,
+        "esewa_phone": esewa_phone,
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def get_order_detail(request, order_id):

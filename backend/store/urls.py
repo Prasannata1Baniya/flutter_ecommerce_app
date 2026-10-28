@@ -13,6 +13,7 @@ urlpatterns = [
 
     path('orders', views.orders_view, name='orders'),
     path('orders/<str:order_id>', views.get_order_detail, name='order_detail'),
+    path('esewa/verify', views.esewa_verify_payment, name='esewa_verify'),
 
     path('user/profile', views.get_user_profile, name='user_profile'),
     path('user/wishlist', views.get_wishlist, name='get_wishlist'),
