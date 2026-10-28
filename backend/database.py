@@ -29,9 +29,9 @@ PRODUCTS: List[Product] = [
             "Ethically handmade in Kyoto studio"
         ],
         images=[
-            "https://images.unsplash.com/photo-1612196808214-b7e239e5f6b7?auto=format&fit=crop&q=80&w=800",
-            "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&q=80&w=800"
-        ],
+            "https://images.unsplash.com/photo-1677761640321-b80251be00ca?q=80&w=687&auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1677761640321-b80251be00ca?q=80&w=687&auto=format&fit=crop&q=80&w=800"
+           ],
         colors=["#F5F2EB", "#222222", "#C2B29F"],
         sizes=["Standard"],
         is_featured=True,

@@ -38,8 +38,8 @@ class Command(BaseCommand):
                     "Ethically handmade in Kyoto studio"
                 ],
                 "images": [
-                    "https://images.unsplash.com/photo-1612196808214-b7e239e5f6b7?auto=format&fit=crop&q=80&w=800",
-                    "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&q=80&w=800"
+                    "https://images.unsplash.com/photo-1677761640321-b80251be00ca?q=80&w=687&auto=format&fit=crop&q=80&w=800,
+                    "https://images.unsplash.com/photo-1677761640321-b80251be00ca?q=80&w=687&auto=format&fit=crop&q=80&w=800"
                 ],
                 "colors": ["#F5F2EB", "#222222", "#C2B29F"],
                 "sizes": ["Standard"],
@@ -186,11 +186,11 @@ class Command(BaseCommand):
         UserProfile.objects.update_or_create(
             id='usr_1',
             defaults={
-                'name': 'Alex Morgan',
-                'email': 'alex.morgan@maison.com',
+                'name': 'Aarav Sharma',
+                'email': 'aarav.sharma@maison.np',
                 'avatar_url': 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
-                'phone': '+1 (555) 234-5678',
-                'default_address': '742 Evergreen Terrace, Springfield'
+                'phone': '+977 9801234567',
+                'default_address': 'Lazimpat, Kathmandu'
             }
         )
 
@@ -220,9 +220,9 @@ class Command(BaseCommand):
                 "tax": 19.20,
                 "total_amount": 259.20,
                 "status": "Delivered",
-                "shipping_address": "742 Evergreen Terrace, Springfield",
-                "full_name": "Alex Morgan",
-                "payment_method": "Apple Pay"
+                "shipping_address": "Lazimpat, Kathmandu",
+                "full_name": "Aarav Sharma",
+                "payment_method": "eSewa Digital Wallet"
             }
         )
         if created:
