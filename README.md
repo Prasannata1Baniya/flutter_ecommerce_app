@@ -18,6 +18,12 @@ A minimalist, high-end e-commerce mobile application built with **Flutter** and 
   <img src="frontend/assets/app_preview/profile.png" width="250" alt="Profile Screen" />
 </p>
 
+<p align="center">
+  <img src="frontend/assets/app_preview/esewa_payment.png" width="250" alt="Order Screen" />
+  &nbsp;&nbsp;
+  <img src="frontend/assets/app_preview/khalti_payment.png" width="250" alt="Profile Screen" />
+</p>
+
 ---
 
 ## 🎨 Theme & Vibe
@@ -31,7 +37,7 @@ A minimalist, high-end e-commerce mobile application built with **Flutter** and 
 - **Interactive Details**: Image gallery, color selection dots, size pills, and quantity controls.
 - **Shopping Bag & Promo Codes**: Cart badge counter, item quantity adjustments, and discount code application (`MINIMAL10`, `MAISON20`).
 - **Wishlist**: Toggle favorites and save items.
-- **Checkout & Orders**: Address entry, payment methods (esewa), order summary, and order history tracking.
+- **Checkout & Orders**: Address entry, payment methods (esewa, khalti, COD), order summary, and order history tracking.
 - **Django Backend**: Django REST API with SQLite database, seed data management command, and Django Admin panel.
 
 ---
