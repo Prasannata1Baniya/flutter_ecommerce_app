@@ -201,9 +201,9 @@ class ApiService {
         tax: 19.20,
         totalAmount: 259.20,
         status: 'Delivered',
-        shippingAddress: '742 Evergreen Terrace, Springfield',
-        fullName: 'Alex Morgan',
-        paymentMethod: 'eSewa',
+        shippingAddress: 'Lazimpat, Kathmandu',
+        fullName: 'Aarav Sharma',
+        paymentMethod: 'eSewa Digital Wallet',
       )
     ];
   }
@@ -285,12 +285,50 @@ class ApiService {
     }
     return UserProfile(
       id: 'usr_1',
-      name: 'Alex Morgan',
-      email: 'alex.morgan@maison.com',
+      name: 'Aarav Sharma',
+      email: 'aarav.sharma@maison.np',
       avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
-      phone: '+1 (555) 234-5678',
-      defaultAddress: '742 Evergreen Terrace, Springfield',
+      phone: '+977 9801234567',
+      defaultAddress: 'Lazimpat, Kathmandu',
     );
+  }
+
+  // Update User Profile
+  static Future<UserProfile?> updateUserProfile({
+    required String name,
+    required String email,
+    required String phone,
+    required String defaultAddress,
+  }) async {
+    if (isTestEnvironment) {
+      return UserProfile(
+        id: 'usr_1',
+        name: name,
+        email: email,
+        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
+        phone: phone,
+        defaultAddress: defaultAddress,
+      );
+    }
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/api/user/profile'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'phone': phone,
+          'default_address': defaultAddress,
+        }),
+      ).timeout(const Duration(seconds: 4));
+
+      if (response.statusCode == 200) {
+        return UserProfile.fromJson(jsonDecode(response.body));
+      }
+    } catch (e) {
+      debugPrint('ApiService updateUserProfile fallback: $e');
+    }
+    return null;
   }
 
   // Local Static Mock Dataset

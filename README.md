@@ -31,7 +31,7 @@ A minimalist, high-end e-commerce mobile application built with **Flutter** and 
 - **Interactive Details**: Image gallery, color selection dots, size pills, and quantity controls.
 - **Shopping Bag & Promo Codes**: Cart badge counter, item quantity adjustments, and discount code application (`MINIMAL10`, `MAISON20`).
 - **Wishlist**: Toggle favorites and save items.
-- **Checkout & Orders**: Address entry, payment methods (Apple Pay, Card, COD), order summary, and order history tracking.
+- **Checkout & Orders**: Address entry, payment methods (esewa), order summary, and order history tracking.
 - **Django Backend**: Django REST API with SQLite database, seed data management command, and Django Admin panel.
 
 ---

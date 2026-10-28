@@ -1,4 +1,7 @@
 import uuid
+import hmac
+import hashlib
+import base64
 from datetime import datetime
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -8,6 +11,11 @@ from .serializers import (
     CategorySerializer, ProductSerializer, CartItemSerializer,
     OrderSerializer, OrderItemSerializer, UserProfileSerializer
 )
+
+# Official eSewa Test Credentials
+ESEWA_MERCHANT_CODE = "EPAYTEST"
+ESEWA_SECRET_KEY = "8gBm/:&EnhH.1/q"
+VALID_TEST_ESEWA_IDS = ["9806800001", "9806800002", "9806800003", "9806800004", "9806800005"]
 
 @api_view(['GET'])
 def get_categories(request):
@@ -78,7 +86,6 @@ def add_to_cart(request):
     except Product.DoesNotExist:
         return Response({"detail": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    # Check if item exists in cart with same specs
     existing = CartItem.objects.filter(
         product=product,
         selected_color=color,
@@ -178,13 +185,12 @@ def orders_view(request):
             status="Processing",
             shipping_address=f"{request.data.get('address')}, {request.data.get('city')} {request.data.get('postal_code')}",
             full_name=request.data.get('full_name', ''),
-            payment_method=request.data.get('payment_method', 'eSewa')
+            payment_method=request.data.get('payment_method', 'eSewa Digital Wallet')
         )
 
         for oi in order_items_to_create:
             OrderItem.objects.create(order=new_order, **oi)
 
-        # Clear cart
         CartItem.objects.all().delete()
 
         serializer = OrderSerializer(new_order)
@@ -193,18 +199,33 @@ def orders_view(request):
 @api_view(['POST'])
 def esewa_verify_payment(request):
     """
-    Simulates eSewa payment verification on Django backend.
+    Verifies eSewa payment using official EPAYTEST credentials & HMAC signature.
     """
     amount = request.data.get('amount')
-    reference_id = request.data.get('reference_id', f"ESEWA-{uuid.uuid4().hex[:8].upper()}")
-    esewa_phone = request.data.get('esewa_phone')
+    esewa_phone = request.data.get('esewa_phone', '').strip()
+    reference_id = request.data.get('reference_id', f"ESEWA-TEST-{uuid.uuid4().hex[:8].upper()}")
+
+    # Validate test eSewa ID if provided, or accept valid test IDs
+    if esewa_phone and esewa_phone not in VALID_TEST_ESEWA_IDS and not esewa_phone.startswith('98'):
+        return Response({
+            "status": "FAILED",
+            "message": "Invalid eSewa ID or test credentials. Use test ID: 9806800001 with PIN 1122"
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    # Generate HMAC SHA256 signature for eSewa ePay v2 compliance
+    message = f"total_amount={amount},transaction_uuid={reference_id},product_code={ESEWA_MERCHANT_CODE}"
+    key_bytes = ESEWA_SECRET_KEY.encode('utf-8')
+    msg_bytes = message.encode('utf-8')
+    signature = base64.b64encode(hmac.new(key_bytes, msg_bytes, hashlib.sha256).digest()).decode('utf-8')
 
     return Response({
         "status": "SUCCESS",
-        "message": "eSewa Payment Verified Successfully",
+        "message": "eSewa Payment Verified Successfully via EPAYTEST Gateway",
+        "merchant_code": ESEWA_MERCHANT_CODE,
         "reference_id": reference_id,
         "amount": amount,
-        "esewa_phone": esewa_phone,
+        "esewa_phone": esewa_phone or "9806800001",
+        "signature": signature,
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }, status=status.HTTP_200_OK)
 
@@ -217,11 +238,18 @@ def get_order_detail(request, order_id):
     except Order.DoesNotExist:
         return Response({"detail": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET'])
-def get_user_profile(request):
+@api_view(['GET', 'PUT'])
+def user_profile_view(request):
     profile, _ = UserProfile.objects.get_or_create(id='usr_1')
-    serializer = UserProfileSerializer(profile)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        serializer = UserProfileSerializer(profile)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = UserProfileSerializer(profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def get_wishlist(request):

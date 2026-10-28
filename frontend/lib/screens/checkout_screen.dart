@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
 import '../providers/cart_provider.dart';
 import '../providers/order_provider.dart';
+import '../providers/user_provider.dart';
 import '../services/api_service.dart';
 import '../widgets/minimal_app_bar.dart';
 import 'order_confirmation_screen.dart';
@@ -18,15 +19,30 @@ class CheckoutScreen extends StatefulWidget {
 class _CheckoutScreenState extends State<CheckoutScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final _nameController = TextEditingController(text: 'Alex Morgan');
-  final _addressController = TextEditingController(text: '742 Evergreen Terrace');
-  final _cityController = TextEditingController(text: 'Springfield');
-  final _postalController = TextEditingController(text: '97477');
-  final _phoneController = TextEditingController(text: '+1 (555) 234-5678');
-  final _esewaPhoneController = TextEditingController(text: '9801234567');
+  final _nameController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _cityController = TextEditingController(text: 'Kathmandu');
+  final _postalController = TextEditingController(text: '44600');
+  final _phoneController = TextEditingController();
+  final _esewaPhoneController = TextEditingController(text: '9806800001'); // Official eSewa Test ID
+  final _khaltiPhoneController = TextEditingController(text: '9801234567');
 
   String _selectedPaymentMethod = 'eSewa Digital Wallet';
   bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      if (userProvider.profile != null) {
+        final p = userProvider.profile!;
+        if (_nameController.text.isEmpty) _nameController.text = p.name;
+        if (_addressController.text.isEmpty) _addressController.text = p.defaultAddress;
+        if (_phoneController.text.isEmpty) _phoneController.text = p.phone;
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -36,6 +52,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     _postalController.dispose();
     _phoneController.dispose();
     _esewaPhoneController.dispose();
+    _khaltiPhoneController.dispose();
     super.dispose();
   }
 
@@ -47,7 +64,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
     final orderProvider = Provider.of<OrderProvider>(context, listen: false);
 
-    // If eSewa selected, perform eSewa backend verification
+    // If eSewa selected, perform eSewa backend verification with EPAYTEST credentials
     if (_selectedPaymentMethod == 'eSewa Digital Wallet') {
       final esewaResult = await ApiService.verifyEsewaPayment(
         amount: cartProvider.total,
@@ -61,7 +78,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             SnackBar(
               backgroundColor: Colors.redAccent,
               content: Text(
-                'eSewa payment verification failed. Please try again.',
+                'eSewa payment verification failed. Use test ID: 9806800001 (PIN: 1122)',
                 style: GoogleFonts.plusJakartaSans(color: Colors.white),
               ),
             ),
@@ -116,7 +133,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             children: [
               // Shipping Section Header
               Text(
-                'SHIPPING ADDRESS',
+                'DELIVERY ADDRESS (NEPAL)',
                 style: GoogleFonts.plusJakartaSans(
                   color: AppTheme.blackPrimary,
                   fontSize: 12,
@@ -129,7 +146,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               TextFormField(
                 controller: _nameController,
                 style: GoogleFonts.plusJakartaSans(fontSize: 14),
-                decoration: const InputDecoration(labelText: 'Full Name'),
+                decoration: const InputDecoration(labelText: 'Full Name', hintText: 'Enter your full name'),
                 validator: (val) => val == null || val.isEmpty ? 'Required field' : null,
               ),
               const SizedBox(height: 12),
@@ -137,7 +154,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               TextFormField(
                 controller: _addressController,
                 style: GoogleFonts.plusJakartaSans(fontSize: 14),
-                decoration: const InputDecoration(labelText: 'Street Address'),
+                decoration: const InputDecoration(labelText: 'Street / Area Address', hintText: 'e.g. Lazimpat, Ward No. 2'),
                 validator: (val) => val == null || val.isEmpty ? 'Required field' : null,
               ),
               const SizedBox(height: 12),
@@ -148,7 +165,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     child: TextFormField(
                       controller: _cityController,
                       style: GoogleFonts.plusJakartaSans(fontSize: 14),
-                      decoration: const InputDecoration(labelText: 'City'),
+                      decoration: const InputDecoration(labelText: 'City', hintText: 'Kathmandu'),
                       validator: (val) => val == null || val.isEmpty ? 'Required field' : null,
                     ),
                   ),
@@ -157,7 +174,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     child: TextFormField(
                       controller: _postalController,
                       style: GoogleFonts.plusJakartaSans(fontSize: 14),
-                      decoration: const InputDecoration(labelText: 'Postal Code'),
+                      decoration: const InputDecoration(labelText: 'Postal Code', hintText: '44600'),
                       validator: (val) => val == null || val.isEmpty ? 'Required field' : null,
                     ),
                   ),
@@ -168,14 +185,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               TextFormField(
                 controller: _phoneController,
                 style: GoogleFonts.plusJakartaSans(fontSize: 14),
-                decoration: const InputDecoration(labelText: 'Phone Number'),
+                decoration: const InputDecoration(labelText: 'Mobile Number (+977)', hintText: '+977 98XXXXXXXX'),
                 validator: (val) => val == null || val.isEmpty ? 'Required field' : null,
               ),
               const SizedBox(height: 28),
 
               // Payment Section
               Text(
-                'PAYMENT METHOD',
+                'PAYMENT METHOD (NEPAL)',
                 style: GoogleFonts.plusJakartaSans(
                   color: AppTheme.blackPrimary,
                   fontSize: 12,
@@ -188,12 +205,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               Column(
                 children: [
                   'eSewa Digital Wallet',
-                  'Apple Pay',
-                  'Credit / Debit Card',
-                  'Cash on Delivery'
+                  'Khalti Digital Wallet',
+                  'Cash on Delivery (COD)'
                 ].map((method) {
                   final isSelected = _selectedPaymentMethod == method;
                   final isEsewa = method == 'eSewa Digital Wallet';
+                  final isKhalti = method == 'Khalti Digital Wallet';
+
+                  Color activeColor = AppTheme.blackPrimary;
+                  if (isEsewa) activeColor = const Color(0xFF41A124);
+                  if (isKhalti) activeColor = const Color(0xFF5C2D91);
 
                   return GestureDetector(
                     onTap: () => setState(() => _selectedPaymentMethod = method),
@@ -201,14 +222,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       margin: const EdgeInsets.only(bottom: 10),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                       decoration: BoxDecoration(
-                        color: isSelected
-                            ? (isEsewa ? const Color(0xFF41A124) : AppTheme.blackPrimary)
-                            : AppTheme.creamSurface,
+                        color: isSelected ? activeColor : AppTheme.creamSurface,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: isSelected
-                              ? (isEsewa ? const Color(0xFF41A124) : AppTheme.blackPrimary)
-                              : AppTheme.borderLight,
+                          color: isSelected ? activeColor : AppTheme.borderLight,
                         ),
                       ),
                       child: Row(
@@ -229,13 +246,25 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 ),
                               ),
                             )
+                          else if (isKhalti)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: isSelected ? Colors.white : const Color(0xFF5C2D91),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'Khalti',
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: isSelected ? const Color(0xFF5C2D91) : Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            )
                           else
                             Icon(
-                              method == 'Apple Pay'
-                                  ? Icons.apple
-                                  : method == 'Credit / Debit Card'
-                                      ? Icons.credit_card
-                                      : Icons.local_atm,
+                              Icons.local_atm,
                               color: isSelected ? AppTheme.creamBg : AppTheme.blackPrimary,
                               size: 20,
                             ),
@@ -276,7 +305,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           const Icon(Icons.account_balance_wallet, size: 18, color: Color(0xFF41A124)),
                           const SizedBox(width: 8),
                           Text(
-                            'eSewa Account Details',
+                            'eSewa Test Gateway (EPAYTEST)',
                             style: GoogleFonts.plusJakartaSans(
                               color: const Color(0xFF2E7D32),
                               fontSize: 13,
@@ -291,28 +320,72 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         keyboardType: TextInputType.phone,
                         style: GoogleFonts.plusJakartaSans(fontSize: 13),
                         decoration: const InputDecoration(
-                          labelText: 'eSewa ID / Mobile Number',
-                          hintText: 'e.g. 9801234567',
+                          labelText: 'eSewa Test ID (9806800001 - 05)',
+                          hintText: '9806800001',
                         ),
                         validator: (val) {
                           if (_selectedPaymentMethod == 'eSewa Digital Wallet') {
-                            if (val == null || val.isEmpty) return 'Enter eSewa ID or Mobile Number';
+                            if (val == null || val.isEmpty) return 'Enter eSewa Test ID';
                           }
                           return null;
                         },
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Your eSewa wallet will be securely charged upon order confirmation.',
+                        'Test Credentials: Password: Nepal@123 | MPIN: 1122 | Service Code: EPAYTEST',
                         style: GoogleFonts.plusJakartaSans(
-                          color: AppTheme.greySubtle,
+                          color: AppTheme.blackMuted,
                           fontSize: 11,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
                   ),
                 ),
               ],
+
+              // Khalti Details Input Box if selected
+              if (_selectedPaymentMethod == 'Khalti Digital Wallet') ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF5C2D91).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFF5C2D91).withValues(alpha: 0.4)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.account_balance_wallet, size: 18, color: Color(0xFF5C2D91)),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Khalti Account Details',
+                            style: GoogleFonts.plusJakartaSans(
+                              color: const Color(0xFF5C2D91),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: _khaltiPhoneController,
+                        keyboardType: TextInputType.phone,
+                        style: GoogleFonts.plusJakartaSans(fontSize: 13),
+                        decoration: const InputDecoration(
+                          labelText: 'Khalti Registered Mobile Number',
+                          hintText: 'e.g. 98XXXXXXXX',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
               const SizedBox(height: 28),
 
               // Order Summary Box
@@ -360,7 +433,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _selectedPaymentMethod == 'eSewa Digital Wallet'
                         ? const Color(0xFF41A124)
-                        : AppTheme.blackPrimary,
+                        : _selectedPaymentMethod == 'Khalti Digital Wallet'
+                            ? const Color(0xFF5C2D91)
+                            : AppTheme.blackPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   onPressed: _isSubmitting ? null : _handlePlaceOrder,
@@ -373,7 +448,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       : Text(
                           _selectedPaymentMethod == 'eSewa Digital Wallet'
                               ? 'PAY WITH ESEWA'
-                              : 'COMPLETE PURCHASE',
+                              : _selectedPaymentMethod == 'Khalti Digital Wallet'
+                                  ? 'PAY WITH KHALTI'
+                                  : 'PLACE ORDER (COD)',
                           style: GoogleFonts.plusJakartaSans(
                             color: AppTheme.creamBg,
                             fontSize: 13,
